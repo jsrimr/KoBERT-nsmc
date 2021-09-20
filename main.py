@@ -4,12 +4,14 @@ from trainer import Trainer
 from utils import init_logger, load_tokenizer, set_seed, MODEL_CLASSES, MODEL_PATH_MAP
 from data_loader import load_and_cache_examples
 
-
+from transformers import AutoTokenizer
+  
 def main(args):
     init_logger()
     set_seed(args)
 
-    tokenizer = load_tokenizer(args)
+    # tokenizer = load_tokenizer(args)
+    tokenizer = AutoTokenizer.from_pretrained("kykim/bert-kor-base")
     train_dataset = load_and_cache_examples(args, tokenizer, mode="train")
     dev_dataset = None
     test_dataset = load_and_cache_examples(args, tokenizer, mode="test")

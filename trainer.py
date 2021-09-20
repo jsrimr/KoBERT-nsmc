@@ -5,8 +5,7 @@ from tqdm import tqdm, trange
 import numpy as np
 import torch
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
-from transformers import AdamW, get_linear_schedule_with_warmup
-
+from transformers import AdamW, get_linear_schedule_with_warmup, AutoModelForMaskedLM
 from utils import compute_metrics, get_label, MODEL_CLASSES
 
 logger = logging.getLogger(__name__)
@@ -22,14 +21,16 @@ class Trainer(object):
         self.label_lst = get_label(args)
         self.num_labels = len(self.label_lst)
 
-        self.config_class, self.model_class, _ = MODEL_CLASSES[args.model_type]
+        
+        # self.config_class, self.model_class, _ = MODEL_CLASSES[args.model_type]
 
-        self.config = self.config_class.from_pretrained(args.model_name_or_path,
-                                                        num_labels=self.num_labels, 
-                                                        finetuning_task=args.task,
-                                                        id2label={str(i): label for i, label in enumerate(self.label_lst)},
-                                                        label2id={label: i for i, label in enumerate(self.label_lst)})
-        self.model = self.model_class.from_pretrained(args.model_name_or_path, config=self.config)
+        # self.config = self.config_class.from_pretrained(args.model_name_or_path,
+        #                                                 num_labels=self.num_labels, 
+        #                                                 finetuning_task=args.task,
+        #                                                 id2label={str(i): label for i, label in enumerate(self.label_lst)},
+        #                                                 label2id={label: i for i, label in enumerate(self.label_lst)})
+        # self.model = self.model_class.from_pretrained(args.model_name_or_path, config=self.config)
+        self.model = AutoModelForMaskedLM.from_pretrained("kykim/bert-kor-base")
 
         # GPU or CPU
         self.device = "cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu"
@@ -74,7 +75,7 @@ class Trainer(object):
         for _ in train_iterator:
             epoch_iterator = tqdm(train_dataloader, desc="Iteration")
             for step, batch in enumerate(epoch_iterator):
-                self.model.train()
+                self.model.train()  #  todo : 여기에 optimizer 랑 scheduler 가 어떻게 반영되는거지? => .train() 이 model.fit() 처럼 트레이닝을 시작하는게 아니라 그냥 mode 전환임
                 batch = tuple(t.to(self.device) for t in batch)  # GPU or CPU
                 inputs = {'input_ids': batch[0],
                           'attention_mask': batch[1],
