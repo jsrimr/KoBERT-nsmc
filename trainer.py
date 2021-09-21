@@ -5,7 +5,7 @@ from tqdm import tqdm, trange
 import numpy as np
 import torch
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
-from transformers import AdamW, get_linear_schedule_with_warmup, AutoModelForMaskedLM
+from transformers import AdamW, get_linear_schedule_with_warmup, AutoModelForSequenceClassification
 from utils import compute_metrics, get_label, MODEL_CLASSES
 
 logger = logging.getLogger(__name__)
@@ -22,7 +22,7 @@ class Trainer(object):
         self.num_labels = len(self.label_lst)
 
         
-        # self.config_class, self.model_class, _ = MODEL_CLASSES[args.model_type]
+        self.config_class, self.model_class, _ = MODEL_CLASSES[args.model_type]
 
         # self.config = self.config_class.from_pretrained(args.model_name_or_path,
         #                                                 num_labels=self.num_labels, 
@@ -30,10 +30,10 @@ class Trainer(object):
         #                                                 id2label={str(i): label for i, label in enumerate(self.label_lst)},
         #                                                 label2id={label: i for i, label in enumerate(self.label_lst)})
         # self.model = self.model_class.from_pretrained(args.model_name_or_path, config=self.config)
-        self.model = AutoModelForMaskedLM.from_pretrained("kykim/bert-kor-base")
+        self.model = AutoModelForSequenceClassification.from_pretrained("kykim/bert-kor-base")
 
         # GPU or CPU
-        self.device = "cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu"
+        self.device = "cuda:1" if torch.cuda.is_available() and not args.no_cuda else "cpu"
         self.model.to(self.device)
 
     def train(self):
