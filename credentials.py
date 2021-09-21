@@ -1,0 +1,2 @@
+project=[YOUR_NEPTUNE_PROJECT_NAME]
+api_token=[YOUR_API_TOKEN]

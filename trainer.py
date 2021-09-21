@@ -1,5 +1,5 @@
 import os
-import logging
+import logging  
 from tqdm import tqdm, trange
 
 import numpy as np
@@ -13,12 +13,13 @@ logger = logging.getLogger(__name__)
 
 
 class Trainer(object):
-    def __init__(self, args, train_dataset=None, dev_dataset=None, test_dataset=None):
+    def __init__(self, args, train_dataset=None, dev_dataset=None, test_dataset=None, run=None):
         self.args = args
         self.train_dataset = train_dataset
         self.dev_dataset = dev_dataset
         self.test_dataset = test_dataset
 
+        self.run = run
         self.label_lst = get_label(args)
         self.num_labels = len(self.label_lst)
 
@@ -88,7 +89,7 @@ class Trainer(object):
                     loss = loss / self.args.gradient_accumulation_steps
 
                 loss.backward()
-
+                self.run["train/loss"].log(loss.item())
                 tr_loss += loss.item()
                 if (step + 1) % self.args.gradient_accumulation_steps == 0:
                     torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.args.max_grad_norm)
@@ -165,12 +166,13 @@ class Trainer(object):
 
         preds = np.argmax(preds, axis=1)
         result = compute_metrics(preds, out_label_ids)
+        
         results.update(result)
 
         logger.info("***** Eval results *****")
         for key in sorted(results.keys()):
             logger.info("  %s = %s", key, str(results[key]))
-
+            run[f"eval/{key}"].log(results[key])
         return results
 
     def save_model(self):
