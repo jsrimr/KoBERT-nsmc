@@ -31,6 +31,9 @@ $ python3 predict.py --input_file {INPUT_FILE_PATH} --output_file {OUTPUT_FILE_P
 ```
 
 ## Results
+you can check visulized results on
+https://app.neptune.ai/jeffrey/nsmc/experiments?compare=EwBgNAzGCMQ&split=tbl&dash=charts&viewId=standard-view&sortBy=%5B%22sys%2Fcreation_time%22%5D&sortFieldType=%5B%22datetime%22%5D&sortFieldAggregationMode=%5B%22auto%22%5D&sortDirection=%5B%22descending%22%5D&suggestionsEnabled=false&lbViewUnpacked=true
+
 |                   | Accuracy (%) |
 | ----------------- | ------------ |
 | KoBERT            | **89.63**    |
