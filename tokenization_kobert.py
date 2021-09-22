@@ -21,6 +21,7 @@ import unicodedata
 from shutil import copyfile
 
 from transformers import PreTrainedTokenizer
+from konlpy.tag import Okt
 
 
 logger = logging.getLogger(__name__)
@@ -112,6 +113,8 @@ class KoBertTokenizer(PreTrainedTokenizer):
         self.sp_model = spm.SentencePieceProcessor()
         self.sp_model.Load(vocab_file)
 
+        self.okt=Okt()
+
     @property
     def vocab_size(self):
         return len(self.idx2token)
@@ -153,10 +156,11 @@ class KoBertTokenizer(PreTrainedTokenizer):
         """ Tokenize a string. """
         text = self.preprocess_text(text)
 
-        if not sample:
-            pieces = self.sp_model.EncodeAsPieces(text)
-        else:
-            pieces = self.sp_model.SampleEncodeAsPieces(text, 64, 0.1)
+        # if not sample:
+        #     pieces = self.sp_model.EncodeAsPieces(text)
+        # else:
+        #     pieces = self.sp_model.SampleEncodeAsPieces(text, 64, 0.1)
+        pieces = self.okt.morphs(text)
         new_pieces = []
         for piece in pieces:
             if len(piece) > 1 and piece[-1] == str(",") and piece[-2].isdigit():
