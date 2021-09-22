@@ -6,7 +6,16 @@ from data_loader import load_and_cache_examples
 
 from transformers import AutoTokenizer
   
+import neptune.new as neptune
+from credentials import project, api_token
+
 def main(args):
+    run = neptune.init(
+            project=project,
+            api_token=api_token,
+        )  # your credentials
+    run["parameters"] = vars(args)
+
     init_logger()
     set_seed(args)
 
@@ -15,7 +24,7 @@ def main(args):
     train_dataset = load_and_cache_examples(args, tokenizer, mode="train")
     dev_dataset = None
     test_dataset = load_and_cache_examples(args, tokenizer, mode="test")
-    trainer = Trainer(args, train_dataset, dev_dataset, test_dataset)
+    trainer = Trainer(args, train_dataset, dev_dataset, test_dataset, run)
 
     if args.do_train:
         trainer.train()
@@ -24,6 +33,7 @@ def main(args):
         trainer.load_model()
         trainer.evaluate("test")
 
+    run.stop()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -60,4 +70,5 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     args.model_name_or_path = MODEL_PATH_MAP[args.model_type]
+
     main(args)
