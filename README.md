@@ -2,6 +2,7 @@
 
 - sentiment classification using KoBERT
 - used 🤗`Huggingface Tranformers`🤗 library
+- for more explanation, please visit https://medium.com/@jsrimr2/classifying-movie-reviews-in-your-language-using-hugging-face-model-9197eaea669d
 
 ## Branches
 - using alternative model(kykim_model) : features/kykim_model
