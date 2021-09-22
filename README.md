@@ -3,6 +3,10 @@
 - sentiment classification using KoBERT
 - used 🤗`Huggingface Tranformers`🤗 library
 
+## Branches
+- using alternative model(kykim_model) : features/kykim_model
+- using alternative preprocessing method : features/preprocessing
+
 ## Dependencies
 
 - torch==1.4.0
