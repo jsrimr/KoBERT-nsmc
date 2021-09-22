@@ -138,29 +138,29 @@ class KoBertTokenizer(PreTrainedTokenizer):
         self.sp_model.Load(self.vocab_file)
 
     def preprocess_text(self, inputs):
+        
         if self.remove_space:
             outputs = " ".join(inputs.strip().split())
         else:
             outputs = inputs
         outputs = outputs.replace("``", '"').replace("''", '"')
-
         if not self.keep_accents:
             outputs = unicodedata.normalize('NFKD', outputs)
             outputs = "".join([c for c in outputs if not unicodedata.combining(c)])
         if self.do_lower_case:
             outputs = outputs.lower()
-
+        outputs = " ".join(self.okt.morphs(outputs))
         return outputs
 
     def _tokenize(self, text, return_unicode=True, sample=False):
         """ Tokenize a string. """
         text = self.preprocess_text(text)
 
-        # if not sample:
-        #     pieces = self.sp_model.EncodeAsPieces(text)
-        # else:
-        #     pieces = self.sp_model.SampleEncodeAsPieces(text, 64, 0.1)
-        pieces = self.okt.morphs(text)
+        if not sample:
+            pieces = self.sp_model.EncodeAsPieces(text)
+        else:
+            pieces = self.sp_model.SampleEncodeAsPieces(text, 64, 0.1)
+
         new_pieces = []
         for piece in pieces:
             if len(piece) > 1 and piece[-1] == str(",") and piece[-2].isdigit():
